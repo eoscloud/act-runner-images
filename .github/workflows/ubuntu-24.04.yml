@@ -1,0 +1,69 @@
+name: ubuntu-24.04
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v5
+    - name: Run hadolint
+      uses: hadolint/hadolint-action@v3.3.0
+      with:
+        dockerfile: ubuntu-24.04/Dockerfile
+  build:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
+
+    outputs:
+      image-name: ${{ steps.build-image.outputs.image }}
+      image-ref: ${{ github.sha }}
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v5
+    - name: Login to GHCR
+      uses: redhat-actions/podman-login@v1
+      with:
+        registry: ghcr.io
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Install qemu dependency
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y qemu-user-static
+    - name: Build Image
+      uses: redhat-actions/buildah-build@v2
+      id: build-image
+      with:
+        image: ghcr.io/${{ github.repository }}
+        tags: ${{ github.sha }} ${{ github.ref == 'refs/heads/main' && 'ubuntu-latest ubuntu-24.04' || '' }}
+        containerfiles: |
+          ubuntu-24.04/Dockerfile
+        context: ./ubuntu-24.04
+        layers: true
+        archs: amd64, arm64
+        extra-args: |
+          --cache-from=ghcr.io/${{ github.repository }}/cache
+          --cache-to=ghcr.io/${{ github.repository }}/cache
+    - name: Push to GHCR
+      uses: redhat-actions/push-to-registry@v2
+      id: push
+      with:
+        image: ${{ steps.build-image.outputs.image }}
+        tags: ${{ steps.build-image.outputs.tags }}
+        registry: ghcr.io
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Echo Outputs
+      run: |
+        echo "${{ toJSON(steps.push.outputs) }}"
