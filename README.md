@@ -5,7 +5,7 @@ https://gitea.com/gitea/runner-images
 
 ## images
 
-* ubuntu-24.04 - https://ghcr.io/eoscloud/act-runner-images/ubuntu-24.04:latest
+* ubuntu-24.04 - ghcr.io/eoscloud/act-runner-images:ubuntu-24.04
 
 ## additional packages
 
