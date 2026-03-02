@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout Code
-      uses: actions/checkout@v5
+      uses: actions/checkout@v6
     - name: Run hadolint
       uses: hadolint/hadolint-action@v3.3.0
       with:
@@ -29,7 +29,7 @@ jobs:
       image-ref: ${{ github.sha }}
     steps:
     - name: Checkout Code
-      uses: actions/checkout@v5
+      uses: actions/checkout@v6
     - name: Login to GHCR
       uses: redhat-actions/podman-login@v1
       with:
