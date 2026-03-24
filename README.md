@@ -14,3 +14,4 @@ https://gitea.com/gitea/runner-images
 * containers-storage
 * iptables
 * qemu-user-static
+* skopeo

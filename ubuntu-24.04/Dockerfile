@@ -3,7 +3,7 @@ FROM docker.gitea.com/runner-images:ubuntu-24.04@sha256:612a5865c64d61d68d914c20
 
 RUN \
 	apt-get update -q && \
-	apt-get install -q -y buildah podman containers-storage iptables qemu-user-static && \
+	apt-get install -q -y buildah podman containers-storage iptables qemu-user-static skopeo && \
 	mkdir -p /root/.docker && \
 	apt-get clean && \
 	rm -rf /var/lib/apt/lists/*
